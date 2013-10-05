@@ -1,0 +1,15 @@
+gen/
+build/
+bin/
+target/
+.idea/
+.settings/
+*.iml
+.project/
+.classpath/
+/out
+/gen-external-apklibs
+.DS_Store
+classes
+project.properties
+local.properties

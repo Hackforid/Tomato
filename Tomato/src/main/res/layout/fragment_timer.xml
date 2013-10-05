@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/timer_rl"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center">
+        <TextView
+            android:id="@+id/timer_colon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text=":"
+            android:textSize="35dp"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/timer_minute"
+            android:layout_toLeftOf="@id/timer_colon"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00"
+            android:textSize="35dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/timer_second"
+            android:layout_toRightOf="@id/timer_colon"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00"
+            android:textSize="35dp"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+    <com.smilehacker.tomato.view.TimeCountView
+        android:id="@+id/timer_time"
+        android:layout_width="320dp"
+        android:layout_height="320dp"
+        android:layout_gravity="center"/>
+
+
+
+
+</FrameLayout>
