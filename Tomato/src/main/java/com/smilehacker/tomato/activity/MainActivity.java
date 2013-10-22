@@ -2,17 +2,17 @@ package com.smilehacker.tomato.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 
 import com.smilehacker.tomato.R;
 import com.smilehacker.tomato.fragment.ConfigFragment;
 import com.smilehacker.tomato.fragment.TimerFragment;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends ActionBarActivity {
     private final static String TAG = "MainActivity";
 
     private ViewPager mViewPager;

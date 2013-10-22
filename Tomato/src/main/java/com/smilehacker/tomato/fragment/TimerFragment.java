@@ -1,8 +1,11 @@
 package com.smilehacker.tomato.fragment;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,16 +34,32 @@ public class TimerFragment extends Fragment {
     private TextView tvSecond;
 
     private EventBus mEventBus;
+    private ServiceConnection mServiceConnection;
+    private TimerService mService;
 
-    private Boolean isTimerStart = false;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getActivity().getApplicationContext();
+
         mEventBus = EventBus.getDefault();
         mEventBus.register(this, TimerEvent.class);
+
+        mServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                TimerService.TimerBinder mBinder = (TimerService.TimerBinder) service;
+                mService = mBinder.getService();
+                mService.startTimer();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                mService = null;
+            }
+        };
     }
 
     @Override
@@ -59,29 +78,55 @@ public class TimerFragment extends Fragment {
         rlTimer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isTimerStart) {
-                    isTimerStart = true;
-                    startTimer();
-                } else {
-                    isTimerStart = false;
-                    cancalTimer();
-                }
+                clickTimer();
             }
         });
     }
 
+    private void clickTimer() {
+        int status = getTimerStatus();
+
+        switch (status) {
+            case TimerService.STATUS_INIT:
+            case TimerService.STATUS_PAUSE_AFTER_WORK: {
+                startTimer();
+                break;
+            }
+
+            case TimerService.STATUS_WORK:
+            case TimerService.STATUS_REST: {
+                cancalTimer();
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
+
     private void startTimer() {
-        //cancalTimer();
-        Intent intent = new Intent(mContext, TimerService.class);
-        intent.putExtra("start", true);
-        mContext.startService(intent);
+        int status = getTimerStatus();
+        if (status == TimerService.STATUS_INIT) {
+            Intent intent = new Intent(mContext, TimerService.class);
+            mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        } else if (status == TimerService.STATUS_PAUSE_AFTER_WORK) {
+            mService.startTimer();
+        }
     }
 
     private void cancalTimer() {
-        Intent intent = new Intent(mContext, TimerService.class);
-        //intent.putExtra("start", false);
-        //mContext.startService(intent);
-        mContext.stopService(intent);
+        if (mService != null) {
+            mService.cancelTimer();
+            mContext.unbindService(mServiceConnection);
+        }
+    }
+
+    private int getTimerStatus() {
+        if (mService != null) {
+            return mService.getTimerStatus();
+        } else {
+            return TimerService.STATUS_INIT;
+        }
     }
 
     public void onEventMainThread(TimerEvent event) {
@@ -115,7 +160,7 @@ public class TimerFragment extends Fragment {
     }
 
     private void showTimer(long millisInFuture, long millisUntilFinished) {
-        Log.i(TAG, "total:" + millisInFuture + " util:" + millisUntilFinished);
+        //Log.i(TAG, "total:" + millisInFuture + " util:" + millisUntilFinished);
         float degree = 360 - ((float) millisUntilFinished) / millisInFuture * 360;
         timeCountView.setDegree(degree);
     }

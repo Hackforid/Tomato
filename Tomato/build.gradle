@@ -25,5 +25,5 @@ android {
 dependencies {
 	compile 'com.android.support:support-v4:18.0.0'
 	compile 'com.android.support:appcompat-v7:18.0.0'
-    compile files('./libs/eventbus-2.1.0-beta-1.jar')
+    compile 'de.greenrobot:eventbus:2.0.2'
 }
